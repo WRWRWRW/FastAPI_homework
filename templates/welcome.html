@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Welcome</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <style>
+    [v-cloak] { display: none; }
+  </style>
+</head>
+<body class="bg-gray-100 p-6">
+  <div id="app" class="max-w-xl mx-auto bg-white p-6 rounded shadow" v-cloak>
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-xl font-bold">Welcome, {{ user }}</h2>
+      <a href="/logout" class="text-blue-500 hover:underline">Logout</a>
+    </div>
+
+    <!-- Notifications -->
+    <div v-if="notifications.length" class="space-y-2 mt-4">
+      <div v-for="(msg, i) in notifications" :key="i"
+           class="bg-green-100 text-green-800 px-4 py-3 rounded shadow whitespace-pre-line break-words">
+        [[ msg ]]
+      </div>
+    </div>
+    <div v-else class="text-gray-500 mt-4">No notifications yet.</div>
+  </div>
+
+  <!-- Vue App -->
+  <script>
+    const { createApp } = Vue;
+
+    createApp({
+      delimiters: ['[[', ']]'],  // Avoid conflict with Jinja2
+      data() {
+        return {
+          user: "[[ user ]]",
+          notifications: []
+        };
+      },
+      mounted() {
+        const ws = new WebSocket(`ws://${location.host}/ws`);
+
+        ws.onopen = () => {
+          console.log("✅ WebSocket connected");
+        };
+
+        ws.onmessage = (e) => {
+          console.log("[WS RECEIVED]", e.data);
+          this.notifications.unshift(e.data);
+        };
+
+        ws.onerror = (e) => {
+          console.error("WebSocket error:", e);
+        };
+
+        setInterval(() => {
+          if (ws.readyState === WebSocket.OPEN) {
+            ws.send("ping");
+          }
+        }, 10000);
+      }
+    }).mount('#app');
+  </script>
+</body>
+</html>

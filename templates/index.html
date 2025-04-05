@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Home</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center h-screen">
+  <div class="bg-white p-6 rounded shadow text-center">
+    {% if user %}
+      <h2 class="text-xl font-bold mb-4">Welcome back, {{ user }}!</h2>
+      <a href="/welcome" class="text-blue-500 hover:underline">Go to Welcome Page</a>
+    {% else %}
+      <h2 class="text-xl font-bold mb-4">You are not logged in.</h2>
+      <a href="/login" class="text-blue-500 hover:underline">Login</a> |
+      <a href="/register" class="text-blue-500 hover:underline">Register</a>
+    {% endif %}
+  </div>
+</body>
+</html>
